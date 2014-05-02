@@ -1,24 +1,45 @@
-from CommandExecution.MockCommandExecutor import MockCommandExecutor
-from TextToCommand.MockCommandLinker import MockCommandLinker
-from VoiceToText.MockSpeechRecognizer import MockSpeechRecognizer
+from naoqi import ALBroker
+from CommandExecution.NaoBasicCommandExecutor import NaoBasicCommandExecutor
+from TextToCommand.Errors import CommandNotFoundError
+from TextToCommand.SimpleCommandLinker import SimpleCommandLinker
+from VoiceToText.NaoVoiceRecognition import NaoRecognizer
 
+import time
+import sys
 
-speechRecognizer = MockSpeechRecognizer()
-commandLinker = MockCommandLinker()
-commandExecutor = MockCommandExecutor()
+myBroker = ALBroker("myBroker",
+                    "0.0.0.0", # listen to anyone
+                    0, # find a free port and use it
+                    "127.0.0.1", # parent broker IP
+                    9559)       # parent broker port
+
+speechRecognizer = NaoRecognizer()
+commandLinker = SimpleCommandLinker()
+commandExecutor = NaoBasicCommandExecutor()
+
 
 def textRecognized(text):
     speechRecognizer.stopRecognizing()
-    command = commandLinker.getCommand(text)
-    if not command:
-        print "Command unrecognized"
-    else:
+    try:
+        command = commandLinker.getCommand(text)
         commandExecutor.executeCommand(command)
+    except CommandNotFoundError as err:
+        print "Command " + err.message + " not found"
 
 
 def main():
     speechRecognizer.registerCallback(textRecognized)
     speechRecognizer.startRecognizing()
+    try:
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        print
+        print "Interrupted by user, shutting down"
+        myBroker.shutdown()
+        sys.exit(0)
 
-main()
+
+if __name__ == "__main__":
+    main()
 
