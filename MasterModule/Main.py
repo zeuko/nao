@@ -2,6 +2,7 @@ from naoqi import ALBroker
 from CommandExecution.NaoBasicCommandExecutor import NaoBasicCommandExecutor
 from TextToCommand.Errors import CommandNotFoundError
 from TextToCommand.SimpleCommandLinker import SimpleCommandLinker
+from VoiceToText.MockSpeechRecognizer import MockSpeechRecognizer
 from VoiceToText.NaoVoiceRecognition import NaoRecognizer
 
 import time
@@ -10,7 +11,7 @@ import sys
 myBroker = ALBroker("myBroker",
                     "0.0.0.0", # listen to anyone
                     0, # find a free port and use it
-                    "127.0.0.1", # parent broker IP
+                    "10.20.106.251", # parent broker IP
                     9559)       # parent broker port
 
 speechRecognizer = NaoRecognizer()

@@ -8,6 +8,7 @@ asr = None
 myBroker = None
 
 class RecognizerModule(ALModule):
+    """Missing pydoc"""
     def __init__(self, name):
         ALModule.__init__(self, name)
 
@@ -38,8 +39,8 @@ class NaoRecognizer(SpeechRecognizer):
         global asr
         asr = ALProxy("ALSpeechRecognition")
         asr.setLanguage("English")
-        wordList = ["go forward", "turn left", "turn right", "stop"]
-        asr.setVocabulary(wordList, True)
+        # wordList = ["go forward", "turn left", "turn right", "stop"]
+        # asr.setVocabulary(wordList, True)
 
         global Recognizer
         Recognizer = RecognizerModule("Recognizer")

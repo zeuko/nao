@@ -9,4 +9,4 @@ class MockSpeechRecognizer(SpeechRecognizer):
         self.callback = None
 
     def startRecognizing(self):
-        self.callback("turn left")
+        self.callback("go forward")
