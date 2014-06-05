@@ -1,3 +1,6 @@
+from naoqi import ALModule
+from VoiceToText.NaoVoiceRecognition import callback
+
 __author__ = 'Mateusz'
 
 
@@ -11,7 +14,7 @@ import urllib
 import time
 import math
 
-LANG_CODE = 'pl-PL'  # Language to use
+LANG_CODE = 'en'#'pl-PL'  # Language to use
 
 GOOGLE_SPEECH_URL = 'https://www.google.com/speech-api/v1/recognize?xjerr=1&client=chromium&pfilter=2&lang=%s&maxresults=6' % (LANG_CODE)
 
@@ -26,7 +29,7 @@ RATE = 16000
 THRESHOLD = 2500  # The threshold intensity that defines silence
 # and noise signal (an int. lower than THRESHOLD is silence).
 
-SILENCE_LIMIT = 0.3  # Silence limit in seconds. The max ammount of seconds where
+SILENCE_LIMIT = 0.6  # Silence limit in seconds. The max ammount of seconds where
 # only silence is recorded. When this time passes the
 # recording finishes and the file is delivered.
 
@@ -62,7 +65,7 @@ def audio_int(num_samples=50):
     return r
 
 
-def listen_for_speech(threshold=THRESHOLD, num_phrases=-1):
+def listen_for_speech(threshold=THRESHOLD, num_phrases=-1, callback = None):
     """
     Listens to Microphone, extracts phrases from it and sends it to
     Google's TTS service and returns response. a "phrase" is sound
@@ -107,6 +110,8 @@ def listen_for_speech(threshold=THRESHOLD, num_phrases=-1):
             # Send file to Google and get response
             r = stt_google_wav(filename)
             if num_phrases == -1:
+                if callback and r:
+                    callback(r)
                 print "Response", r
             else:
                 response.append(r)
@@ -166,7 +171,7 @@ def stt_google_wav(audio_fname):
     f.close()
 
     # Headers. A common Chromium (Linux) User-Agent
-    hrs = {"User-Agent": "Mozilla/5.0 (X11; Linux i686) AppleWebKit/535.7 (KHTML, like Gecko) Chrome/16.0.912.63 Safari/535.7",
+    hrs = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1944.0 Safari/537.36",
            'Content-type': 'audio/x-flac; rate=16000'}
 
     req = urllib2.Request(GOOGLE_SPEECH_URL, data=flac_cont, headers=hrs)
@@ -176,8 +181,8 @@ def stt_google_wav(audio_fname):
         p = urllib2.urlopen(req)
         response = p.read()
         res = eval(response)['hypotheses']
-    except:
-        print "Couldn't parse service response"
+    except Exception, e:
+        print "Couldn't parse service response: " + str(e)
         res = None
 
     if del_flac:
@@ -187,6 +192,28 @@ def stt_google_wav(audio_fname):
 
 
 if(__name__ == '__main__'):
+    audio_int()  # To measure your mic levels
     listen_for_speech()  # listen to mic.
     print stt_google_wav('hello.flac')  # translate audio file
-    audio_int()  # To measure your mic levels
+
+
+class GoogleRecognizerModule:
+    """Missing pydoc"""
+
+    def __init__(self):
+        self.callback = None
+
+    def startRecognizing(self):
+        listen_for_speech(callback=self.callback)  # listen to mic.
+        audio_int()  # To measure your mic levels
+
+    def registerCallback(self, onRecognizedText):
+        global callback
+        callback = onRecognizedText
+
+    def onWordRecognized(self, key, value, message):
+        """invokes callback with recognized word with highest probability"""
+        self.callback(value[0])
+
+    def stopWorking(self):
+        global memory
