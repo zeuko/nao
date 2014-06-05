@@ -14,18 +14,18 @@ from optparse import OptionParser
 from CommandExecution.NaoBasicCommandExecutor import NaoBasicCommandExecutor
 from TextToCommand.SimpleCommandLinker import SimpleCommandLinker
 
-NAO_IP = "10.20.106.251"
+NAO_IP = "127.0.0.1"
 
 
 # Global variable to store the HumanGreeter module instance
-HumanGreeter = None
+VoiceRecognition = None
 memory = None
 asr = None
 commandLinker = SimpleCommandLinker()
 commandExecutor = None
 
 
-class HumanGreeterModule(ALModule):
+class VoiceRecognitionModule(ALModule):
     """ A simple module able to react
     to facedetection events
 
@@ -41,10 +41,10 @@ class HumanGreeterModule(ALModule):
         global memory
         memory = ALProxy("ALMemory")
         memory.subscribeToEvent("WordRecognized",
-                                "HumanGreeter",
-                                "onFaceDetected")
+                                "VoiceRecognition",
+                                "onWordDetected")
 
-    def onFaceDetected(self, key, value, message):
+    def onWordDetected(self, key, value, message):
         """ This will be called each time a face is
         detected.
 
@@ -52,7 +52,7 @@ class HumanGreeterModule(ALModule):
         # Unsubscribe to the event when talking,
         # to avoid repetitions
         memory.unsubscribeToEvent("WordRecognized",
-                                  "HumanGreeter")
+                                  "VoiceRecognition")
 
         print "Rozpoznano: " + value[0] + ": " + str(value[1])
         com = commandLinker.getCommand(value[0])
@@ -61,11 +61,11 @@ class HumanGreeterModule(ALModule):
 
         # Subscribe again to the event
         memory.subscribeToEvent("WordRecognized",
-                                "HumanGreeter",
-                                "onFaceDetected")
+                                "VoiceRecognition",
+                                "onWordDetected")
     def shutdown(self):
         memory.unsubscribeToEvent("WordRecognized",
-                                  "HumanGreeter")
+                                  "VoiceRecognition")
 
 
 def main():
@@ -105,13 +105,13 @@ def main():
     asr = ALProxy("ALSpeechRecognition")
     asr.setLanguage("English")
     wordList = ["go forward", "turn left", "turn right", "stop", "stand up", "hello nao", "sit down"]
-    asr.setVocabulary(wordList, True)
+    #asr.setVocabulary(wordList, True)
 
     global commandExecutor
     commandExecutor = NaoBasicCommandExecutor()
 
-    global HumanGreeter
-    HumanGreeter = HumanGreeterModule("HumanGreeter")
+    global VoiceRecognition
+    VoiceRecognition = VoiceRecognitionModule("VoiceRecognition")
     # HumanGreeter.shutdown()
 
     try:
