@@ -13,9 +13,9 @@ class NaoBasicCommandExecutor(CommandExecutor):
     def executeCommand(self, command):
         if command == "go forward":
             self.move.moveTo(1.0, 0.0, 0.0)
-        elif command == "turn right":
+        elif command == "turn right" or command == "vpravvo":
             self.move.moveTo(0.0, 0.0, -pi / 2.0)
-        elif command == "turn left":
+        elif command == "turn left" or command == "vlevvo":
             self.move.post.moveTo(0.0, 0.0, pi / 2.0)
         elif command == "stand up":
             self.posture.goToPosture("StandInit", 0.8)
@@ -23,7 +23,11 @@ class NaoBasicCommandExecutor(CommandExecutor):
             self.tts.say("Hello, Patricia!")
         elif command == "sit down":
             self.posture.goToPosture("Sit", 0.8)
-        elif command == "stop":
-            self.move.moveTo(0.0, 0.0, 0.0)
+        elif command == "go back":
+            self.move.moveTo(-1.0, 0.0, 0.0)
+        elif command == "napshoot":
+            self.move.moveTo(1.0, 0.0, 0.0)
+        elif command == "fstech":
+            self.move.moveTo(-1.0, 0.0, 0.0)
         else:
             raise CommandNotFoundError(command)

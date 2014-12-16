@@ -22,12 +22,13 @@ THRESHOLD = 0.5
 # Global variable to store the HumanGreeter module instance
 HumanGreeter = None
 memory = None
+myBroker = None
 asr = None
 commandLinker = SimpleCommandLinker()
 commandExecutor = None
 
 
-class HumanGreeterModule(ALModule):
+class SpeechRecognizerModule(ALModule):
     """ A module able to react
     to facedetection events
 
@@ -43,7 +44,7 @@ class HumanGreeterModule(ALModule):
         global memory
         memory = ALProxy("ALMemory")
         memory.subscribeToEvent("WordRecognized",
-                                "HumanGreeter",
+                                "SpeechRecognizer",
                                 "onFaceDetected")
 
     def onFaceDetected(self, key, value, message):
@@ -53,20 +54,25 @@ class HumanGreeterModule(ALModule):
         """
         # Unsubscribe to the event when executing
         memory.unsubscribeToEvent("WordRecognized",
-                                  "HumanGreeter")
+                                  "SpeechRecognizer")
 
         print "Rozpoznano: " + value[0] + ": " + str(value[1])
         com = commandLinker.getCommand(value[0])
+        if com == "shut down":
+            myBroker.shutdown()
+            return
+
         if value[1] > THRESHOLD:
             commandExecutor.executeCommand(com)
 
         # Subscribe again to the event
         memory.subscribeToEvent("WordRecognized",
-                                "HumanGreeter",
+                                "SpeechRecognizer",
                                 "onFaceDetected")
+
     def shutdown(self):
         memory.unsubscribeToEvent("WordRecognized",
-                                  "HumanGreeter")
+                                  "SpeechRecognizer")
 
 
 def main():
@@ -81,11 +87,12 @@ def main():
     # We need this broker to be able to construct
     # NAOqi modules and subscribe to other modules
     # The broker must stay alive until the program exists
+    global myBroker
     myBroker = ALBroker("myBroker",
-                        "0.0.0.0", # listen to anyone
-                        0, # find a free port and use it
-                        NAO_IP, # parent broker IP
-                        NAO_PORT)       # parent broker port
+                        "0.0.0.0",  # listen to anyone
+                        0,  # find a free port and use it
+                        NAO_IP,  # parent broker IP
+                        NAO_PORT)  # parent broker port
 
 
     # Warning: HumanGreeter must be a global variable
@@ -99,12 +106,11 @@ def main():
     except RuntimeError:
         print "Vocabulary have already been set. Omitting."
 
-
     global commandExecutor
     commandExecutor = NaoBasicCommandExecutor()
 
-    global HumanGreeter
-    HumanGreeter = HumanGreeterModule("HumanGreeter")
+    global SpeechRecognizer
+    SpeechRecognizer = SpeechRecognizerModule("SpeechRecognizer")
     # HumanGreeter.shutdown()
 
     try:
@@ -114,6 +120,8 @@ def main():
         print
         print "Interrupted by user, shutting down"
         myBroker.shutdown()
+        SpeechRecognizer.shutdown()
+        asr.stop()
         sys.exit(0)
 
 
