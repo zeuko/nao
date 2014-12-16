@@ -9,6 +9,7 @@ from naoqi import ALBroker
 from naoqi import ALModule
 
 from Configuration import readConfiguration
+from Configuration import commands
 from CommandExecution.NaoBasicCommandExecutor import NaoBasicCommandExecutor
 from TextToCommand.SimpleCommandLinker import SimpleCommandLinker
 
@@ -94,8 +95,7 @@ def main():
     asr = ALProxy("ALSpeechRecognition")
     asr.setLanguage("English")
     try:
-        wordList = ["go forward", "turn left", "turn right", "stop", "stand up", "hello nao", "sit down"]
-        asr.setVocabulary(wordList, True)
+        asr.setVocabulary(commands, True)
     except RuntimeError:
         print "Vocabulary have already been set. Omitting."
 
