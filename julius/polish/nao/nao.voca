@@ -1,0 +1,44 @@
+% NS_B
+<s>        sil
+
+% NS_E
+</s>        sil
+
+% IDZ_V
+IDZ [IDZ]  i dz
+DO [DO]  d o
+
+% W_V
+W [W]  w
+
+% KIERUNEK_V
+PRAWO [PRAWO]  p r a w o
+LEWO [LEWO]  l e w o
+PROSTO [PROSTO]  p r o s t o
+
+
+% ODLEGLOSC_V
+JEDEN [JEDEN]  j e d e n
+DWA [DWA]  d w a
+TRZY [TRZY]  t Z y
+CZTERY [CZTERY]  cz t e r y
+PIĘĆ [PIĘĆ]  p'' e_ c'
+SZEŚĆ [SZEŚĆ]  sz e s' c'
+SIEDEM [SIEDEM]  s' e d e m
+OSIEM [OSIEM]  o s' e m
+DZIEWIĘĆ [DZIEWIĘĆ]  dz' e w'' e_ c'
+DZIESIĘĆ [DZIESIĘĆ]  dz' e s' e_ c'
+JEDENAŚCIE [JEDENAŚCIE]  j e d e n a s' c' e
+DWANAŚCIE [DWANAŚCIE]  d w a n a s' c' e
+TRZYNAŚCIE [TRZYNAŚCIE]  t Z y n a s' c' e
+CZTERNAŚCIE [CZTERNAŚCIE]  cz t e r n a s' c' e
+PIĘTNAŚCIE [PIĘTNAŚCIE]  p'' e_ t n a s' c' e
+SZESNAŚCIE [SZESNAŚCIE]  sz e s n a s' c' e
+SIEDEMNAŚCIE [SIEDEMNAŚCIE]  s' e d e m n a s' c' e
+OSIEMNAŚCIE [OSIEMNAŚCIE]  o s' e m n a s' c' e
+DZIEWIĘTNAŚCIE [DZIEWIĘTNAŚCIE]  dz' e w'' e_ t n a s' c' e
+DWADZIEŚCIA [DWADZIEŚCIA]  d w a dz' e s' c' a
+
+
+% JEDNOSTKA_V
+METRÓW [METRÓW]  m e t r u w
