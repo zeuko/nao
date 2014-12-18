@@ -11,7 +11,8 @@ from naoqi import ALModule
 from GeneralConfigurationLoader import readConfiguration
 from GeneralConfigurationLoader import commands
 from CommandExecution.NaoBasicCommandExecutor import NaoBasicCommandExecutor
-from TextToCommand.SimpleCommandLinker import SimpleCommandLinker
+from CommandExecution.NaoGeneralCommandExecutor import NaoGeneralCommandExecutor
+from TextToCommand.GeneralCommandLinker import GeneralCommandLinker
 
 CONFIG_PATH = '../config.cfg'
 
@@ -24,7 +25,7 @@ HumanGreeter = None
 memory = None
 myBroker = None
 asr = None
-commandLinker = SimpleCommandLinker()
+commandLinker = None
 commandExecutor = None
 
 
@@ -58,9 +59,9 @@ class SpeechRecognizerModule(ALModule):
 
         print "Rozpoznano: " + value[0] + ": " + str(value[1])
         com = commandLinker.getCommand(value[0])
-        if com == "shut down":
-            myBroker.shutdown()
-            return
+        # if com == "shut down":
+        #     myBroker.shutdown()
+        #     return
 
         if value[1] > THRESHOLD:
             commandExecutor.executeCommand(com)
@@ -101,14 +102,19 @@ def main():
     global asr
     asr = ALProxy("ALSpeechRecognition")
     asr.setLanguage("English")
+    import MasterModule.CommandConfigurationLoader
+
+    commandMap =  MasterModule.CommandConfigurationLoader.loadConfig('../command_config_eng.cfg')
+    commands = commandMap.keys()
     try:
         asr.setVocabulary(commands, True)
     except RuntimeError:
         print "Vocabulary have already been set. Omitting."
 
     global commandExecutor
-    commandExecutor = NaoBasicCommandExecutor()
-
+    commandExecutor = NaoGeneralCommandExecutor()
+    global commandLinker
+    commandLinker = GeneralCommandLinker(commandMap)
     global SpeechRecognizer
     SpeechRecognizer = SpeechRecognizerModule("SpeechRecognizer")
     # HumanGreeter.shutdown()

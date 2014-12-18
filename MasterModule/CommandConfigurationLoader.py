@@ -28,8 +28,8 @@ def loadConfig(filename):
         command_class = config[1].strip()
         print string_command
         print command_class
-        command_map[string_command] = initCommandInstance(command_class, proxy)
-        command_map[string_command].execute()
+        command_map[string_command] = initCommandInstance(command_class )
+
     return command_map
 
 
