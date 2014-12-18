@@ -1,6 +1,6 @@
 from TextToCommand.CommandLinker import CommandLinker
-from TextToCommand.Errors import CommandNotFoundError
-from MasterModule.Configuration import commands
+from MasterModule.Errors import CommandNotFoundError
+from MasterModule.GeneralConfigurationLoader import commands
 
 
 class SimpleCommandLinker(CommandLinker):

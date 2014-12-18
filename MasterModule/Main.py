@@ -1,12 +1,12 @@
-from naoqi import ALBroker
-from CommandExecution.NaoBasicCommandExecutor import NaoBasicCommandExecutor
-from TextToCommand.Errors import CommandNotFoundError
-from TextToCommand.SimpleCommandLinker import SimpleCommandLinker
-from VoiceToText.MockSpeechRecognizer import MockSpeechRecognizer
-from VoiceToText.NaoVoiceRecognition import NaoRecognizer
-
 import time
 import sys
+
+from naoqi import ALBroker
+from CommandExecution.NaoBasicCommandExecutor import NaoBasicCommandExecutor
+from MasterModule.Errors import CommandNotFoundError
+from TextToCommand.SimpleCommandLinker import SimpleCommandLinker
+from VoiceToText.NaoVoiceRecognition import NaoRecognizer
+
 
 myBroker = ALBroker("myBroker",
                     "0.0.0.0", # listen to anyone

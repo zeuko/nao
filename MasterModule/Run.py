@@ -8,8 +8,8 @@ from naoqi import ALProxy
 from naoqi import ALBroker
 from naoqi import ALModule
 
-from Configuration import readConfiguration
-from Configuration import commands
+from GeneralConfigurationLoader import readConfiguration
+from GeneralConfigurationLoader import commands
 from CommandExecution.NaoBasicCommandExecutor import NaoBasicCommandExecutor
 from TextToCommand.SimpleCommandLinker import SimpleCommandLinker
 

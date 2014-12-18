@@ -1,3 +1,5 @@
+
+
 class SpeechRecognizer(object):
     def startRecognizing(self):
         pass

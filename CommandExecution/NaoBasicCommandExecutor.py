@@ -1,7 +1,8 @@
 from math import pi
+
 from naoqi import ALProxy
 from CommandExecution.CommandExecutor import CommandExecutor
-from TextToCommand.Errors import CommandNotFoundError
+from MasterModule.Errors import CommandNotFoundError
 
 
 class NaoBasicCommandExecutor(CommandExecutor):
