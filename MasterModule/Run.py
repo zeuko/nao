@@ -1,7 +1,5 @@
 # -*- encoding: UTF-8 -*-
-""" Say 'hello, you' each time a human face is detected
 
-"""
 
 import sys
 import time
@@ -10,23 +8,28 @@ from naoqi import ALProxy
 from naoqi import ALBroker
 from naoqi import ALModule
 
-from optparse import OptionParser
+from Configuration import readConfiguration
+from Configuration import commands
 from CommandExecution.NaoBasicCommandExecutor import NaoBasicCommandExecutor
 from TextToCommand.SimpleCommandLinker import SimpleCommandLinker
 
-NAO_IP = "10.20.106.251"
+CONFIG_PATH = '../config.cfg'
 
+NAO_IP = "10.20.106.251"
+NAO_PORT = 9559
+THRESHOLD = 0.5
 
 # Global variable to store the HumanGreeter module instance
 HumanGreeter = None
 memory = None
+myBroker = None
 asr = None
 commandLinker = SimpleCommandLinker()
 commandExecutor = None
 
 
-class HumanGreeterModule(ALModule):
-    """ A simple module able to react
+class SpeechRecognizerModule(ALModule):
+    """ A module able to react
     to facedetection events
 
     """
@@ -37,11 +40,11 @@ class HumanGreeterModule(ALModule):
         # we have our Python broker connected to NAOqi broker
 
 
-        # Subscribe to the FaceDetected event:
+        # Subscribe to the WordRecognized event:
         global memory
         memory = ALProxy("ALMemory")
         memory.subscribeToEvent("WordRecognized",
-                                "HumanGreeter",
+                                "SpeechRecognizer",
                                 "onFaceDetected")
 
     def onFaceDetected(self, key, value, message):
@@ -49,53 +52,47 @@ class HumanGreeterModule(ALModule):
         detected.
 
         """
-        # Unsubscribe to the event when talking,
-        # to avoid repetitions
+        # Unsubscribe to the event when executing
         memory.unsubscribeToEvent("WordRecognized",
-                                  "HumanGreeter")
+                                  "SpeechRecognizer")
 
         print "Rozpoznano: " + value[0] + ": " + str(value[1])
         com = commandLinker.getCommand(value[0])
-        if value[1] > 0.5:
+        if com == "shut down":
+            myBroker.shutdown()
+            return
+
+        if value[1] > THRESHOLD:
             commandExecutor.executeCommand(com)
 
         # Subscribe again to the event
         memory.subscribeToEvent("WordRecognized",
-                                "HumanGreeter",
+                                "SpeechRecognizer",
                                 "onFaceDetected")
+
     def shutdown(self):
         memory.unsubscribeToEvent("WordRecognized",
-                                  "HumanGreeter")
+                                  "SpeechRecognizer")
 
 
 def main():
     """ Main entry point
 
     """
-    parser = OptionParser()
-    parser.add_option("--pip",
-                      help="Parent broker port. The IP address or your robot",
-                      dest="pip")
-    parser.add_option("--pport",
-                      help="Parent broker port. The port NAOqi is listening to",
-                      dest="pport",
-                      type="int")
-    parser.set_defaults(
-        pip=NAO_IP,
-        pport=9559)
 
-    (opts, args_) = parser.parse_args()
-    pip = opts.pip
-    pport = opts.pport
+    global NAO_PORT, NAO_IP, THRESHOLD
+
+    NAO_IP, NAO_PORT, THRESHOLD = readConfiguration(CONFIG_PATH)
 
     # We need this broker to be able to construct
     # NAOqi modules and subscribe to other modules
     # The broker must stay alive until the program exists
+    global myBroker
     myBroker = ALBroker("myBroker",
-                        "0.0.0.0", # listen to anyone
-                        0, # find a free port and use it
-                        pip, # parent broker IP
-                        pport)       # parent broker port
+                        "0.0.0.0",  # listen to anyone
+                        0,  # find a free port and use it
+                        NAO_IP,  # parent broker IP
+                        NAO_PORT)  # parent broker port
 
 
     # Warning: HumanGreeter must be a global variable
@@ -104,14 +101,16 @@ def main():
     global asr
     asr = ALProxy("ALSpeechRecognition")
     asr.setLanguage("English")
-    wordList = ["go forward", "turn left", "turn right", "stop", "stand up", "hello nao", "sit down"]
-    asr.setVocabulary(wordList, True)
+    try:
+        asr.setVocabulary(commands, True)
+    except RuntimeError:
+        print "Vocabulary have already been set. Omitting."
 
     global commandExecutor
     commandExecutor = NaoBasicCommandExecutor()
 
-    global HumanGreeter
-    HumanGreeter = HumanGreeterModule("HumanGreeter")
+    global SpeechRecognizer
+    SpeechRecognizer = SpeechRecognizerModule("SpeechRecognizer")
     # HumanGreeter.shutdown()
 
     try:
@@ -121,6 +120,8 @@ def main():
         print
         print "Interrupted by user, shutting down"
         myBroker.shutdown()
+        SpeechRecognizer.shutdown()
+        asr.stop()
         sys.exit(0)
 
 
