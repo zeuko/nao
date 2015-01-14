@@ -9,10 +9,9 @@ from naoqi import ALBroker
 from naoqi import ALModule
 
 from GeneralConfigurationLoader import readConfiguration
-from GeneralConfigurationLoader import commands
-from CommandExecution.NaoBasicCommandExecutor import NaoBasicCommandExecutor
 from CommandExecution.NaoGeneralCommandExecutor import NaoGeneralCommandExecutor
 from TextToCommand.GeneralCommandLinker import GeneralCommandLinker
+
 
 CONFIG_PATH = '../config.cfg'
 
@@ -83,7 +82,7 @@ def main():
 
     global NAO_PORT, NAO_IP, THRESHOLD
 
-    NAO_IP, NAO_PORT, THRESHOLD = readConfiguration(CONFIG_PATH)
+    NAO_IP, NAO_PORT, THRESHOLD, config_path = readConfiguration(CONFIG_PATH)
 
     # We need this broker to be able to construct
     # NAOqi modules and subscribe to other modules
@@ -113,7 +112,6 @@ def main():
 
     global commandExecutor
     commandExecutor = NaoGeneralCommandExecutor()
-    global commandLinker
     commandLinker = GeneralCommandLinker(commandMap)
     global SpeechRecognizer
     SpeechRecognizer = SpeechRecognizerModule("SpeechRecognizer")

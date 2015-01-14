@@ -1,6 +1,6 @@
-__author__ = 'Patrycja'
+from CommandExecution.Commands.Command import Command
 
-from MasterModule.Commands.Command import Command
+__author__ = 'Patrycja'
 
 
 class GreeterCommand(Command):

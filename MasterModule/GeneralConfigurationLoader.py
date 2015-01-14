@@ -29,7 +29,7 @@ def readConfiguration(filename):
     except socket.error:
         print 'Invalid ip value in configuration file. Setting to default:', ip
 
-        port = '9559'
+    port = '9559'
     try:
         inputPort = config.getint('Main', 'port')
         if 0 <= inputPort <= 65535:
@@ -39,4 +39,10 @@ def readConfiguration(filename):
     except ValueError:
         print 'Invalid port value in configuration file. Setting to default:', port
 
-    return ip, port, threshold
+    config_file = 'command_config_eng.cfg'
+    try:
+        config_file = config.get('Main', 'command_config_filepath')
+    except socket.error:
+        print 'Invalid command config filepath in configuration file. Setting to default:', config_file
+
+    return ip, port, threshold, config_file
