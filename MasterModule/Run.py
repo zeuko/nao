@@ -11,8 +11,9 @@ from naoqi import ALModule
 from GeneralConfigurationLoader import readConfiguration
 from ExecutorModule.NaoGeneralCommandExecutor import NaoGeneralCommandExecutor
 from TextToCommand.GeneralCommandLinker import GeneralCommandLinker
+import MasterModule.CommandConfigurationLoader
 
-
+COMMAND_CONFIG_PATH = '../command_config_eng.cfg'
 CONFIG_PATH = '../config.cfg'
 NAO_IP = "10.20.106.251"
 NAO_PORT = 9559
@@ -43,9 +44,9 @@ class SpeechRecognizerModule(ALModule):
         memory = ALProxy("ALMemory")
         memory.subscribeToEvent("WordRecognized",
                                 "SpeechRecognizer",
-                                "onFaceDetected")
+                                "onWordRecognized")
 
-    def onFaceDetected(self, key, value, message):
+    def onWordRecognized(self, key, value, message):
         """ This will be called each time a face is
         detected.
 
@@ -54,11 +55,11 @@ class SpeechRecognizerModule(ALModule):
         memory.unsubscribeToEvent("WordRecognized",
                                   "SpeechRecognizer")
 
-        print "Rozpoznano: " + value[0] + ": " + str(value[1])
+        print "Recognized: " + value[0] + ": " + str(value[1])
         com = commandLinker.getCommand(value[0])
-        # if com == "shut down":
-        #     myBroker.shutdown()
-        #     return
+        if com == "shutdown":
+            myBroker.shutdown()
+            return
 
         if value[1] > THRESHOLD:
             commandExecutor.executeCommand(com)
@@ -66,7 +67,7 @@ class SpeechRecognizerModule(ALModule):
         # Subscribe again to the event
         memory.subscribeToEvent("WordRecognized",
                                 "SpeechRecognizer",
-                                "onFaceDetected")
+                                "onWordRecognized")
 
     def shutdown(self):
         memory.unsubscribeToEvent("WordRecognized",
@@ -74,13 +75,14 @@ class SpeechRecognizerModule(ALModule):
 
 
 def main():
-    """ Main entry point
+    """ Main entry point.
 
     """
 
-    global NAO_PORT, NAO_IP, THRESHOLD
+    global NAO_PORT, NAO_IP, THRESHOLD, COMMAND_CONFIG_PATH
+    global commandExecutor, commandLinker, asr
 
-    NAO_IP, NAO_PORT, THRESHOLD, config_path = readConfiguration(CONFIG_PATH)
+    NAO_IP, NAO_PORT, THRESHOLD, COMMAND_CONFIG_PATH = readConfiguration(CONFIG_PATH)
 
     # We need this broker to be able to construct
     # NAOqi modules and subscribe to other modules
@@ -93,27 +95,26 @@ def main():
                         NAO_PORT)  # parent broker port
 
 
-    # Warning: HumanGreeter must be a global variable
-    # The name given to the constructor must be the name of the
-    # variable
-    global asr
+
     asr = ALProxy("ALSpeechRecognition")
     asr.setLanguage("English")
-    import MasterModule.CommandConfigurationLoader
 
-    commandMap =  MasterModule.CommandConfigurationLoader.loadConfig('../command_config_eng.cfg')
+    commandMap = MasterModule.CommandConfigurationLoader.loadConfig(COMMAND_CONFIG_PATH)
     commands = commandMap.keys()
     try:
         asr.setVocabulary(commands, True)
     except RuntimeError:
         print "Vocabulary have already been set. Omitting."
 
-    global commandExecutor
+
     commandExecutor = NaoGeneralCommandExecutor()
     commandLinker = GeneralCommandLinker(commandMap)
+
+    # Warning: SpeechRecognizer must be a global variable
+    # The name given to the constructor must be the name of the variable
+    # It is required by NAOqi
     global SpeechRecognizer
     SpeechRecognizer = SpeechRecognizerModule("SpeechRecognizer")
-    # HumanGreeter.shutdown()
 
     try:
         while True:

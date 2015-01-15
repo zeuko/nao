@@ -4,9 +4,6 @@ import ConfigParser
 import socket
 
 
-#commands = ["go forward", "turn left", "turn right", "go back", "stand up", "hello nao", "sit down", "napshoot", "shut down", "fstech", "vlevvo", "vpravvo"]
-
-
 def readConfiguration(filename):
     config = ConfigParser.ConfigParser()
     config.read(filename)
