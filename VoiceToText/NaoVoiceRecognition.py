@@ -8,7 +8,7 @@ asr = None
 myBroker = None
 
 class RecognizerModule(ALModule):
-    """ Missing pydoc
+    """ Recognizer moduleextending ALModule for NAO voice recognition.
 
     """
     def __init__(self, name):

@@ -29,7 +29,7 @@ commandExecutor = None
 
 
 class SpeechRecognizerModule(ALModule):
-    """ A module able to react to word recognition events.
+    """ A module able to react to word recognition events, used by main application.
 
     """
 

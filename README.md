@@ -1,5 +1,1 @@
-This... is... SPARTA!
-
-I mean... Voice Recognition Module for Nao Robot.
-
-Or will be... soon.
+Please read documentation of NAO Voice Recognition in order to find out all important information about the product.
