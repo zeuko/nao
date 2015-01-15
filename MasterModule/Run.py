@@ -9,18 +9,17 @@ from naoqi import ALBroker
 from naoqi import ALModule
 
 from GeneralConfigurationLoader import readConfiguration
-from CommandExecution.NaoGeneralCommandExecutor import NaoGeneralCommandExecutor
+from ExecutorModule.NaoGeneralCommandExecutor import NaoGeneralCommandExecutor
 from TextToCommand.GeneralCommandLinker import GeneralCommandLinker
 
 
 CONFIG_PATH = '../config.cfg'
-
 NAO_IP = "10.20.106.251"
 NAO_PORT = 9559
 THRESHOLD = 0.5
 
-# Global variable to store the HumanGreeter module instance
-HumanGreeter = None
+# Global variable to store the SpeechRecognizer module instance - it is REQUIRED by NAOqi
+SpeechRecognizer = None
 memory = None
 myBroker = None
 asr = None
@@ -29,8 +28,7 @@ commandExecutor = None
 
 
 class SpeechRecognizerModule(ALModule):
-    """ A module able to react
-    to facedetection events
+    """ A module able to react to word recognition events.
 
     """
 
