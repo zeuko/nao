@@ -1,4 +1,4 @@
-from CommandExecution.Commands.Command import Command
+from ExecutorModule.Commands.Command import Command
 
 __author__ = 'Patrycja'
 

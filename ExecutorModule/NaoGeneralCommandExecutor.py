@@ -1,6 +1,6 @@
 __author__ = 'Patrycja'
 
-from CommandExecution.CommandExecutor import CommandExecutor
+from ExecutorModule.CommandExecutor import CommandExecutor
 
 
 class NaoGeneralCommandExecutor(CommandExecutor):

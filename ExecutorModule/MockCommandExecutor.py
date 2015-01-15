@@ -1,4 +1,4 @@
-from CommandExecution.CommandExecutor import CommandExecutor
+from ExecutorModule.CommandExecutor import CommandExecutor
 
 
 class MockCommandExecutor(CommandExecutor):
